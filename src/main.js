@@ -5,8 +5,8 @@ import VueLazyLoad from 'vue-lazyload'
 
 Vue.config.productionTip = false
 
-Vue.use('VueLazyLoad',function () {
-  loading:'@/static/loading-svg/loading-bars.svg'
+Vue.use(VueLazyLoad,{
+  loading:'/static/loading-svg/loading-bars.svg'
 })
 
 /* eslint-disable no-new */
