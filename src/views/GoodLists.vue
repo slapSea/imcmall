@@ -147,7 +147,7 @@
             this.busy = true
             setTimeout(() => {
               this.getGoodLists(true)
-            }, 1000);
+            }, 500);
           }
       }
     }
