@@ -478,6 +478,7 @@
 .icon-arrow-short {
   width: 11px;
   height: 11px;
+  transition: all .3s ease-out;
 }
 
 .page-title-accessory {
@@ -527,6 +528,21 @@
 .accessory-result-page .view-more-normal .view-more-btn {
   top: 0;
   padding-top: 40px;
+}
+.loadMore{
+  height: 100px;
+  width: 100px;
+  text-align: center;
+}
+
+.sort-up{
+  transform: rotate(180deg);
+  transition: all .3s ease-out;
+}
+
+.btn:hover{
+  background-color: #ffe5e6;
+  transition: all .3s ease-out;
 }
 
 @media only screen and (max-width: 767px) {

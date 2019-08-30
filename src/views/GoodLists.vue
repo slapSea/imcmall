@@ -10,7 +10,7 @@
           <div class="filter-nav">
             <span class="sortby">Sort by:</span>
             <a href="javascript:void(0)" class="default cur">Default</a>
-            <a href="javascript:void(0)" class="price" @click="sortGoods" >Price <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
+            <a href="javascript:void(0)" class="price" @click="sortGoods" >Price <svg class="icon icon-arrow-short" v-bind:class="{'sort-up':!sortFlag}"><use xlink:href="#icon-arrow-short"></use></svg></a>
             <a href="javascript:void(0)" class="filterby stopPop" @click="showFileterPop">Filter by</a>
           </div>
           <div class="accessory-result">
@@ -37,13 +37,13 @@
                       <div class="name">{{item.productName}}</div>
                       <div class="price">{{item.salePrice}}</div>
                       <div class="btn-area">
-                        <a href="javascript:;" class="btn btn--m">加入购物车</a>
+                        <a href="javascript:;" class="btn btn--m" @click="addCartList(item.productId)">加入购物车</a>
                       </div>
                     </div>
                   </li>
                 </ul>
-                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10">
-                  加载中...
+                <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30" class="loadMore">
+                  <img src="../../static/loading-svg/loading-spinning-bubbles.svg" v-show="loading">
                 </div>
               </div>
             </div>
@@ -51,6 +51,14 @@
         </div>
       </div>
       <div class="md-overlay" v-show="overLayFlag" @click="closePop"></div>
+      <!--<modal v-bind:class="{'md-show':mdShow}">
+        <p slot="message">
+          请先登录，否则无法加入购物车！
+        </p>
+        <div slot="btnGroup">
+          <a class="btn btn&#45;&#45;m">关闭</a>
+        </div>
+      </modal>-->
       <nav-footer></nav-footer>
     </div>
 </template>
@@ -62,6 +70,7 @@
   import NavHeader from '../components/NavHeader'
   import NavFooter from '../components/NavFooter'
   import NavBread from '../components/NavBread'
+  //import Modal from '../components/Modal'
   import axios from 'axios'
 
     export default {
@@ -85,13 +94,16 @@
             page:1,
             pageSize:8,
             //默认是禁用
-            busy:true
+            busy:true,
+            loading:true,
+            mdShow:false
           }
         },
         components:{
           NavBread,
-            NavHeader,
-            NavFooter
+          NavHeader,
+          NavFooter,
+          //Modal
         },
         mounted:function(){
           this.getGoodLists()
@@ -101,10 +113,13 @@
             let param={
               page:this.page,
               pageSize:this.pageSize,
-              sort:this.sortFlag?1:-1
+              sort:this.sortFlag?1:-1,
+              priceLevel:this.priceChecked
             }
-            axios.get('/goods',{params:param}).then(result=>{
+            this.loading = true
+            axios.get('/goods/list',{params:param}).then(result=>{
               var res = result.data
+              this.loading = true
               if(res.status==="0"){
                 //flag判断是否是加载更多
                 if(flag){
@@ -131,6 +146,8 @@
           },
           setPriceFilter(index){
             this.priceChecked = index
+            this.page = 1
+            this.getGoodLists()
             this.closePop()
           },
           closePop(){
@@ -148,6 +165,15 @@
             setTimeout(() => {
               this.getGoodLists(true)
             }, 500);
+          },
+          addCartList(productId){
+            axios.post('/goods/addCart',{productId:productId}).then((res)=>{
+              if (res.data.status == "0"){
+                alert("加入成功")
+              }else{
+                alert("msg:"+res.data.msg)
+              }
+            })
           }
       }
     }
